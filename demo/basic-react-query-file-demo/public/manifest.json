@@ -1,0 +1,16 @@
+{
+    "name": "TanStack React Query Demo",
+    "short_name": "TanStack Demo",
+    "description": "A demo application showcasing TanStack Router and React Query with PWA capabilities",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#000000",
+    "orientation": "portrait-primary",
+    "categories": [
+        "productivity",
+        "utilities"
+    ],
+    "lang": "zh-CN",
+    "dir": "ltr"
+}
