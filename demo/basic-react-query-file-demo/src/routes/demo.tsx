@@ -6,28 +6,31 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Loader2, Users, UserPlus, LogIn, User, Settings, Bell, Palette } from 'lucide-react'
 import {
-  useTheme,
-  useNotifications,
-  useFeatures,
-  useAuthStatus,
-  useUIStore,
-  showSuccess,
-  showError,
-  showWarning,
-  showInfo
+    useTheme,
+    useNotifications,
+    useFeatures,
+    useAuthStatus,
+    useUIStore,
+    showSuccess,
+    showError,
+    showWarning,
+    showInfo
 } from '@/stores'
+import { useI18n } from '@/i18n/hooks'
 
 export const Route = createFileRoute('/demo')({
     component: DemoPage,
 })
 
 function DemoPage() {
+    const { t } = useI18n()
+
     return (
         <div className="container mx-auto p-6 space-y-8">
             <div className="text-center space-y-2">
-                <h1 className="text-3xl font-bold">Redaxios + React Query 集成演示</h1>
+                <h1 className="text-3xl font-bold">{t('demo.title')}</h1>
                 <p className="text-muted-foreground">
-                    展示Redaxios HTTP客户端与React Query的完美集成
+                    {t('demo.redaxios.description')}
                 </p>
             </div>
 
@@ -44,6 +47,7 @@ function DemoPage() {
 }
 
 function UsersDemo() {
+    const { t } = useI18n()
     const { data: users, isLoading, error, refetch } = useUsers({
         page: 1,
         limit: 5
@@ -53,12 +57,12 @@ function UsersDemo() {
     const handleCreateUser = async () => {
         try {
             await createUser.mutateAsync({
-                name: `用户${Date.now()}`,
+                name: `${t('auth.username')}${Date.now()}`,
                 email: `user${Date.now()}@example.com`,
                 password: 'password123'
             })
         } catch (error) {
-            console.error('创建用户失败:', error)
+            console.error(t('errors.create_failed'), error)
         }
     }
 
@@ -67,7 +71,7 @@ function UsersDemo() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Users className="h-5 w-5" />
-                    用户管理演示
+                    {t('demo.title')} - {t('auth.username')}
                 </CardTitle>
                 <CardDescription>
                     使用React Query hooks进行用户数据管理
@@ -82,7 +86,7 @@ function UsersDemo() {
                         size="sm"
                     >
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        刷新用户列表
+                        {t('common.refresh')}
                     </Button>
                     <Button
                         onClick={handleCreateUser}
@@ -91,20 +95,20 @@ function UsersDemo() {
                     >
                         {createUser.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         <UserPlus className="mr-2 h-4 w-4" />
-                        创建用户
+                        {t('common.add')} {t('auth.username')}
                     </Button>
                 </div>
 
                 {error && (
                     <div className="text-sm text-red-600 bg-red-50 p-3 rounded">
-                        错误: {error.message}
+                        {t('common.error')}: {error.message}
                     </div>
                 )}
 
                 {users && (
                     <div className="space-y-2">
                         <div className="text-sm text-muted-foreground">
-                            共 {users.pagination?.total || users.data?.length || 0} 个用户
+                            {t('common.total')} {users.pagination?.total || users.data?.length || 0} {t('auth.username')}
                         </div>
                         {users.data?.slice(0, 3).map((user: any) => (
                             <div key={user.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
@@ -352,9 +356,9 @@ function ZustandUIDemo() {
             warning: { title: '警告', message: '这是一个警告通知' },
             info: { title: '信息', message: '这是一个信息通知' }
         }
-        
+
         const { title, message } = messages[type]
-        
+
         if (type === 'success') showSuccess(title, message)
         else if (type === 'error') showError(title, message)
         else if (type === 'warning') showWarning(title, message)

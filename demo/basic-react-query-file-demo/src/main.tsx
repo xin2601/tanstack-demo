@@ -8,12 +8,20 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import { StoreProvider, StoreDebugger } from './components/StoreProvider'
 import { NotificationContainer } from './components/NotificationContainer'
 import { initMonitoring } from './services/monitoring'
+import './i18n' // 初始化 i18n
 import './styles.css'
 
 // 初始化监控系统
 initMonitoring()
 
 const queryClient = new QueryClient()
+
+// 将 i18n 实例挂载到 window 对象上，供 Store 使用
+if (typeof window !== 'undefined') {
+  import('./i18n').then(({ default: i18n }) => {
+    window.i18n = i18n
+  })
+}
 
 // Set up a Router instance
 const router = createRouter({
@@ -45,7 +53,7 @@ if (!rootElement.innerHTML) {
         <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
           <PWAUpdatePrompt />
-          <NotificationContainer />
+          {/* <NotificationContainer /> */}
           <StoreDebugger />
         </QueryClientProvider>
       </StoreProvider>

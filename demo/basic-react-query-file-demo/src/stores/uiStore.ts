@@ -171,8 +171,13 @@ export const useUIStore = create<UIStore>()(
             setLocale: (locale) => {
                 set({ locale })
 
-                // 可以在这里添加国际化逻辑
+                // 更新 HTML lang 属性
                 document.documentElement.lang = locale === 'zh-CN' ? 'zh' : 'en'
+                
+                // 触发 i18n 语言变更（如果 i18n 已初始化）
+                if (typeof window !== 'undefined' && window.i18n) {
+                    window.i18n.changeLanguage(locale).catch(console.error)
+                }
             },
 
             // 重置状态

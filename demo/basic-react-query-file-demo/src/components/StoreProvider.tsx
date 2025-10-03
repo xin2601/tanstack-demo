@@ -5,6 +5,7 @@
 
 import * as React from 'react'
 import { useStoreInitializer, useNetworkListener, showNotification } from '@/stores'
+import { useTranslation } from 'react-i18next'
 
 interface StoreProviderProps {
     children: React.ReactNode
@@ -12,6 +13,7 @@ interface StoreProviderProps {
 
 export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
     const { initialized } = useStoreInitializer()
+    const { t, ready } = useTranslation()
 
     // 网络状态监听
     useNetworkListener()
@@ -19,7 +21,11 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
     // 会话超时监听
     React.useEffect(() => {
         const handleSessionTimeout = () => {
-            showNotification('warning', '会话已超时', '请重新登录以继续使用', 10000)
+            if (ready) {
+                showNotification('warning', t('messages.session_timeout'), t('auth.session_expired'), 10000)
+            } else {
+                showNotification('warning', '会话已超时', '请重新登录以继续使用', 10000)
+            }
         }
 
         window.addEventListener('session-timeout', handleSessionTimeout)
@@ -27,7 +33,7 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
         return () => {
             window.removeEventListener('session-timeout', handleSessionTimeout)
         }
-    }, [])
+    }, [t, ready])
 
     // 主题初始化
     React.useEffect(() => {
@@ -83,7 +89,9 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">正在初始化应用...</p>
+                    <p className="text-gray-600">
+                        {ready ? t('app.initializing') : '正在初始化应用...'}
+                    </p>
                 </div>
             </div>
         )
@@ -115,7 +123,7 @@ export const StoreDebugger: React.FC = () => {
                     </button>
                     <button
                         onClick={() => {
-                            if (confirm('确定要重置所有 Store 状态吗？')) {
+                            if (confirm('确定要重置所有 Store 状态吗？ / Are you sure to reset all store states?')) {
                                 // 这里可以调用 resetAllStores，但需要小心处理
                                 console.log('Store reset requested')
                             }
