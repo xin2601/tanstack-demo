@@ -96,6 +96,12 @@ export class GlobalErrorHandler {
     }
 
     private setupNetworkErrorMonitoring() {
+        // 如果使用Redaxios，跳过fetch拦截
+        if (window.__USE_REDAXIOS__) {
+            console.log('Redaxios detected, skipping fetch interception')
+            return
+        }
+
         // 监听fetch请求
         const originalFetch = window.fetch
         window.fetch = async (...args) => {
@@ -352,8 +358,12 @@ export const reportError = (error: Error, context?: any) => {
     globalErrorHandler.reportError(error, context)
 }
 
-// 扩展XMLHttpRequest类型
+// 扩展全局类型
 declare global {
+    interface Window {
+        __USE_REDAXIOS__?: boolean
+    }
+
     interface XMLHttpRequest {
         _monitoringData?: {
             method: string

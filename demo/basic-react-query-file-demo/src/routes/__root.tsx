@@ -43,6 +43,14 @@ function RootComponent() {
         >
           监控
         </Link>
+        <Link
+          to='/demo'
+          activeProps={{
+            className: 'font-bold',
+          }}
+        >
+          Redaxios演示
+        </Link>
       </div>
       <hr />
       <Outlet />
