@@ -29,7 +29,11 @@ src/
 │   ├── __root.tsx      # 根路由布局
 │   ├── *.tsx           # 页面路由组件
 │   └── _pathlessLayout/ # 嵌套布局示例
-├── *.tsx               # 数据获取和业务逻辑
+├── services/           # API服务和数据获取逻辑
+├── stores/             # 状态管理 (Zustand)
+├── types/              # TypeScript类型定义
+├── utils/              # 工具函数
+├── mocks/              # 模拟数据
 ├── main.tsx            # 应用入口点
 └── styles.css          # 全局样式
 ```
@@ -79,14 +83,14 @@ export const Route = createFileRoute('/path')({
 - 必须使用 TypeScript 进行类型安全
 - 利用 `loader` 进行数据预加载
 - 实现适当的错误边界和加载状态
-- 使用 [`defaultPreload: 'intent'`](src/main.tsx:124) 进行智能预加载
+- 使用 [`defaultPreload: 'intent'`](src/main.tsx:16) 进行智能预加载
 
 ### 2. 数据获取规则
 
 #### React Query 配置
-- 使用 [`queryOptions()`](src/postsQueryOptions.tsx:5) 定义查询配置
+- 使用 `queryOptions()` 定义查询配置
 - 查询键必须使用数组格式: `['resource', ...params]`
-- 在路由 loader 中使用 [`queryClient.ensureQueryData()`](src/routes/posts.$postId.tsx:8)
+- 在路由 loader 中使用 `queryClient.ensureQueryData()` 进行数据预加载
 
 #### 数据获取模式
 ```typescript
@@ -144,13 +148,13 @@ export function Component({ className, ...props }: ComponentProps) {
 
 #### Tailwind CSS 规范
 - 优先使用 Tailwind CSS 类名
-- 使用 [`tailwind-merge`](package.json:62) 处理类名冲突
+- 使用 [`tailwind-merge`](package.json:61) 处理类名冲突
 - 响应式设计使用 Tailwind 断点
 - 自定义样式放在 [`src/styles.css`](src/styles.css:1)
 
 #### 样式最佳实践
 - 使用语义化的 CSS 变量
-- 支持深色模式 (通过 `next-themes`)
+- 支持深色模式 (通过 [`next-themes`](package.json:52))
 - 保持样式的一致性和可维护性
 - 避免内联样式，优先使用 Tailwind 类
 
