@@ -4,7 +4,18 @@ import { useUsers, useCreateUser, useLogin, useProfile } from '@/lib/api/hooks'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, Users, UserPlus, LogIn, User } from 'lucide-react'
+import { Loader2, Users, UserPlus, LogIn, User, Settings, Bell, Palette } from 'lucide-react'
+import {
+  useTheme,
+  useNotifications,
+  useFeatures,
+  useAuthStatus,
+  useUIStore,
+  showSuccess,
+  showError,
+  showWarning,
+  showInfo
+} from '@/stores'
 
 export const Route = createFileRoute('/demo')({
     component: DemoPage,
@@ -20,11 +31,13 @@ function DemoPage() {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <UsersDemo />
                 <AuthDemo />
                 <HttpClientDemo />
                 <MonitoringDemo />
+                <ZustandUIDemo />
+                <ZustandFeaturesDemo />
             </div>
         </div>
     )
@@ -315,6 +328,174 @@ function MonitoringDemo() {
                         </div>
                     </div>
                 )}
+            </CardContent>
+        </Card>
+    )
+}
+
+function ZustandUIDemo() {
+    const theme = useTheme()
+    const { notifications, clearNotifications } = useNotifications()
+    const { setTheme } = useUIStore()
+
+    const handleThemeChange = () => {
+        const themes = ['light', 'dark', 'system'] as const
+        const currentIndex = themes.indexOf(theme)
+        const nextTheme = themes[(currentIndex + 1) % themes.length]
+        setTheme(nextTheme)
+    }
+
+    const handleShowNotification = (type: 'success' | 'error' | 'warning' | 'info') => {
+        const messages = {
+            success: { title: '操作成功', message: '这是一个成功通知' },
+            error: { title: '操作失败', message: '这是一个错误通知' },
+            warning: { title: '警告', message: '这是一个警告通知' },
+            info: { title: '信息', message: '这是一个信息通知' }
+        }
+        
+        const { title, message } = messages[type]
+        
+        if (type === 'success') showSuccess(title, message)
+        else if (type === 'error') showError(title, message)
+        else if (type === 'warning') showWarning(title, message)
+        else showInfo(title, message)
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Palette className="h-5 w-5" />
+                    Zustand UI 状态演示
+                </CardTitle>
+                <CardDescription>
+                    演示主题切换和通知系统
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div>
+                    <h4 className="font-medium mb-2">主题控制</h4>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            onClick={handleThemeChange}
+                            variant="outline"
+                            size="sm"
+                        >
+                            <Palette className="mr-2 h-4 w-4" />
+                            当前主题: {theme}
+                        </Button>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 className="font-medium mb-2">通知系统</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                        <Button
+                            onClick={() => handleShowNotification('success')}
+                            variant="outline"
+                            size="sm"
+                            className="text-green-600"
+                        >
+                            成功通知
+                        </Button>
+                        <Button
+                            onClick={() => handleShowNotification('error')}
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600"
+                        >
+                            错误通知
+                        </Button>
+                        <Button
+                            onClick={() => handleShowNotification('warning')}
+                            variant="outline"
+                            size="sm"
+                            className="text-yellow-600"
+                        >
+                            警告通知
+                        </Button>
+                        <Button
+                            onClick={() => handleShowNotification('info')}
+                            variant="outline"
+                            size="sm"
+                            className="text-blue-600"
+                        >
+                            信息通知
+                        </Button>
+                    </div>
+                </div>
+
+                {notifications.length > 0 && (
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-medium">活跃通知 ({notifications.length})</h4>
+                            <Button
+                                onClick={clearNotifications}
+                                variant="outline"
+                                size="sm"
+                            >
+                                清除所有
+                            </Button>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                            查看右上角的通知显示
+                        </div>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    )
+}
+
+function ZustandFeaturesDemo() {
+    const { features, toggleFeature } = useFeatures()
+    const { isAuthenticated } = useAuthStatus()
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-5 w-5" />
+                    功能开关演示
+                </CardTitle>
+                <CardDescription>
+                    演示应用功能开关和认证状态
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div>
+                    <h4 className="font-medium mb-2">功能开关</h4>
+                    <div className="space-y-2">
+                        {Object.entries(features).map(([feature, enabled]) => (
+                            <div key={feature} className="flex items-center justify-between">
+                                <span className="text-sm">{feature}</span>
+                                <Button
+                                    onClick={() => toggleFeature(feature)}
+                                    variant={enabled ? "default" : "outline"}
+                                    size="sm"
+                                >
+                                    {enabled ? '已启用' : '已禁用'}
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <h4 className="font-medium mb-2">认证状态</h4>
+                    <div className="flex items-center gap-2">
+                        <Badge variant={isAuthenticated ? "default" : "secondary"}>
+                            {isAuthenticated ? '已认证' : '未认证'}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                            (由 Zustand 管理的客户端状态)
+                        </span>
+                    </div>
+                </div>
+
+                <div className="text-xs text-muted-foreground bg-gray-50 p-2 rounded">
+                    💡 这些状态由 Zustand 管理，与 React Query 的服务端状态互补
+                </div>
             </CardContent>
         </Card>
     )

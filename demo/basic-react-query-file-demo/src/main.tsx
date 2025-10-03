@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { routeTree } from './routeTree.gen'
 import { PWAUpdatePrompt } from './components/PWAUpdatePrompt'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { StoreProvider, StoreDebugger } from './components/StoreProvider'
+import { NotificationContainer } from './components/NotificationContainer'
 import { initMonitoring } from './services/monitoring'
 import './styles.css'
 
@@ -39,10 +41,14 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-        <PWAUpdatePrompt />
-      </QueryClientProvider>
+      <StoreProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+          <PWAUpdatePrompt />
+          <NotificationContainer />
+          <StoreDebugger />
+        </QueryClientProvider>
+      </StoreProvider>
     </ErrorBoundary>
   )
 }
