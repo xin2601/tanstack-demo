@@ -16,7 +16,7 @@ export const Route = createRootRouteWithContext<{
     return (
       <div>
         <p>This is the notFoundComponent configured on root route</p>
-        <Link to="/">Start Over</Link>
+        <Link to='/'>Start Over</Link>
       </div>
     )
   },
@@ -25,9 +25,9 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <>
-      <div className="p-2 flex gap-2 text-lg">
+      <div className='p-2 flex gap-2 text-lg'>
         <Link
-          to="/"
+          to='/'
           activeProps={{
             className: 'font-bold',
           }}
@@ -38,8 +38,8 @@ function RootComponent() {
       </div>
       <hr />
       <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools position="bottom-right" />
+      <ReactQueryDevtools buttonPosition='top-right' />
+      <TanStackRouterDevtools position='bottom-right' />
     </>
   )
 }
