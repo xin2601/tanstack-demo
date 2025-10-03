@@ -35,6 +35,14 @@ function RootComponent() {
         >
           Home
         </Link>
+        <Link
+          to='/monitoring'
+          activeProps={{
+            className: 'font-bold',
+          }}
+        >
+          监控
+        </Link>
       </div>
       <hr />
       <Outlet />

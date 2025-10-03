@@ -4,7 +4,12 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { routeTree } from './routeTree.gen'
 import { PWAUpdatePrompt } from './components/PWAUpdatePrompt'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { initMonitoring } from './services/monitoring'
 import './styles.css'
+
+// 初始化监控系统
+initMonitoring()
 
 const queryClient = new QueryClient()
 
@@ -33,9 +38,11 @@ const rootElement = document.getElementById('app')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <PWAUpdatePrompt />
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <PWAUpdatePrompt />
+      </QueryClientProvider>
+    </ErrorBoundary>
   )
 }
